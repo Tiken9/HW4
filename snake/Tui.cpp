@@ -21,7 +21,7 @@ Tui::Tui()
 
     win.sa_handler = &win_sz_handler;
     win.sa_flags = SA_RESTART;
-    sigaction(SIGWINCH, &win, NULL);
+    sigaction(SIGWINCH, &win, nullptr);
 
     struct termios opt;
     tcgetattr(0, &opt);
