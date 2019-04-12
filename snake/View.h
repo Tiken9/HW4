@@ -7,6 +7,8 @@
 #include <list>
 #include <functional>
 
+using timer_fn = std::function<void(void)>;
+
 class View
 {
 public:
@@ -21,7 +23,8 @@ public:
 
     void set_model(Game *g);
     void set_onkey(Keypressable* k);
-
+    void set_ontimer(int, timer_fn);
+    std::pair<int, timer_fn> timer;
 
     Game* game;
     Keypressable* onkey_delegate;

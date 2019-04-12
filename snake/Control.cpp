@@ -35,7 +35,6 @@ void Control_Human::onkey(int key)
         default:
             break;
     }
-    game->move();
 
     View* v = View::get();
     v->draw();

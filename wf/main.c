@@ -1,13 +1,13 @@
 #include <stddef.h>
 #include <stdio.h>
 #include "reader.h"
-#include "dict.h"
+#include "new_dict.h"
 
 int main(int argc, char* argv[])
 {
 
     reader* rd = reader_init();
-    dict* dict = dictionary();
+    new_dict* dict = dictionary();
     char* word;
 
     if(argc == 1)
@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
 
     dict->print(dict);
 
-    rd->destroy(rd);
-    dict->destroy(dict);
+    //rd->destroy(rd);
+   // dict->destroy(dict);
     return 0;
 }

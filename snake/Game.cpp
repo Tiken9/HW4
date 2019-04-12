@@ -17,6 +17,7 @@ Game::Game()
 {
     View* v = View::get();
     v->set_model(this);
+    v->set_ontimer(500, std::bind(&Game::move, this));
 }
 
 void Game::move()
