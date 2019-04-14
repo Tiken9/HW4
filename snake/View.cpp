@@ -27,3 +27,9 @@ void View::set_onkey(Keypressable *k)
     onkey_delegate = k;
 }
 
+void View::set_ontimer(int time, timer_fn func)
+{
+    timer.first = time;
+    timer.second = func;
+}
+

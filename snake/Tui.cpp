@@ -2,6 +2,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 #include <signal.h>
+#include <sys/poll.h>
 
 #include "Tui.h"
 #include "Game.h"
@@ -75,6 +76,7 @@ void Tui::snakepainter(Coord a, Dir t)
 {
     gotoxy(a.first, a.second);
     putchar("^v<>o"[t]);
+
 }
 
 
@@ -87,8 +89,8 @@ void Tui::draw()
 
     SnakePainter f = std::bind(&View::snakepainter, this, std::placeholders::_1, std::placeholders::_2);
     game->paint(f);
-
-
+    gotoxy(1,1);
+    fflush(stdout);
 }
 
 
@@ -100,6 +102,33 @@ void Tui::gotoxy(int x, int y)
 
 void Tui::run()
 {
+    int n;
+    char key;
+    while(1)
+    {
+        struct pollfd our = {};
+        our.fd = STDIN_FILENO;
+        our.events = POLLIN;
+        n = poll(&our, 1, timer.first);
+        if(n == 1)
+        {
+            read(STDIN_FILENO, &key, 1);
+            if(key == 'x' || key == -1)
+                break;
+
+            onkey_delegate->onkey(key);
+        }
+        else if(n == 0)
+        {
+            timer.second();
+            draw();
+        }
+        else
+        {
+
+        }
+    }
+    /*
     int key = -1;
     while ((key = getchar()))
     {
@@ -108,7 +137,7 @@ void Tui::run()
 
         onkey_delegate->onkey(key);
     }
-
+*/
 }
 
 
