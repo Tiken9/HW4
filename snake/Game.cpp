@@ -1,16 +1,25 @@
+#include <random>
 #include "Game.h"
 #include "View.h"
 
-void Game::paint(SnakePainter p)
-{
-    bool st = true;
+#define RAB_PROB 5
 
-    for(auto s: snakes)
-        for(const auto& c: s->body)
+void Game::paint(SnakePainter p) {
+    bool st;
+    int iter = 31;
+
+    for (auto s: snakes)
+    {
+        st = true;
+        for (const auto &c: s->body)
         {
-            p(c, st ? s->dir : BODY);
+            p(c, st ? s->dir : BODY, iter);
             st = false;
         }
+        iter++;
+    }
+    for(auto r: rabbits)
+        p(r, RABBIT, 0);
 }
 
 Game::Game()
@@ -22,8 +31,20 @@ Game::Game()
 
 void Game::move()
 {
+
     for(auto s : snakes)
+    {
+        auto head = s->next_position();
+        for(auto r : rabbits)
+            if(r == head)
+            {
+                s->addit++;
+                rabbits.remove(r);
+                break;
+            }
         s->move();
+    }
+    add_rabbit();
 }
 
 void Game::add(Snake* s)
@@ -33,17 +54,55 @@ void Game::add(Snake* s)
 
 Snake::Snake()
 {
-    body.push_back(Coord(11,15));
-    body.push_back(Coord(12,15));
-    body.push_back(Coord(13,15));
+
+    body.push_back(rand_coord());
+
     dir = LEFT;
+    addit = 2;
 }
 
 Snake::Snake(const Snake& s) :
-    body(s.body), dir(s.dir)
+    body(s.body), dir(s.dir), addit(s.addit)
 {}
 
 void Snake::move()
+{
+
+    body.push_front(next_position());
+
+    if(addit == 0)
+    {
+        body.pop_back();
+        return;
+    }
+
+    addit--;
+}
+
+
+void Snake::set_dir(Dir d)
+{
+    dir = d;
+}
+
+
+int Coord::distance(const Coord& b)  const
+{
+    return std::abs(b.first - this->first) + std::abs(b.second - this->second);
+}
+
+void Game::add_rabbit() {
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    std::uniform_int_distribution<> uid(1, RAB_PROB);
+
+    if(rabbits.size() < 6 && uid(g) == 2)
+        rabbits.emplace_back(rand_coord());
+}
+
+Coord Snake::next_position()
 {
     auto head = body.front();
     switch(this->dir)
@@ -63,11 +122,18 @@ void Snake::move()
         default:
             break;
     }
-    body.push_front(head);
-    body.pop_back();
+    return head;
 }
 
-void Snake::set_dir(Dir d)
+Coord rand_coord()
 {
-    dir = d;
+    View *v = View::get();
+    Coord win = v->window_size();
+
+    std::random_device rd;
+    std::mt19937 g(rd());
+
+    std::uniform_int_distribution<> uidX(2, win.first - 2);
+    std::uniform_int_distribution<> uidY(2, win.second - 2);
+    return Coord(uidX(g), uidY(g));
 }

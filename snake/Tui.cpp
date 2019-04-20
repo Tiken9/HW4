@@ -47,6 +47,7 @@ void Tui::get_win_size()
 
 void Tui::print_frame()
 {
+    set_color(0);
     for(int i = 0; i < y + 1; i++)
     {
         if(i == 0 || i == (y))
@@ -72,12 +73,20 @@ void Tui::clear_screen()
 }
 
 
-void Tui::snakepainter(Coord a, Dir t)
+void Tui::snakepainter(Coord a, Dir t, int color)
 {
     gotoxy(a.first, a.second);
-    putchar("^v<>o"[t]);
+    set_color(color);
+    putchar("^v<>o@"[t]);
+
 
 }
+
+void Tui::set_color(int c)
+{
+    printf("\033[%dm", c);
+}
+
 
 
 void Tui::draw()
@@ -87,7 +96,9 @@ void Tui::draw()
     clear_screen();
     print_frame();
 
-    SnakePainter f = std::bind(&View::snakepainter, this, std::placeholders::_1, std::placeholders::_2);
+    SnakePainter f = std::bind(&View::snakepainter, this, std::placeholders::_1, std::placeholders::_2,
+            std::placeholders::_3);
+
     game->paint(f);
     gotoxy(1,1);
     fflush(stdout);
@@ -120,6 +131,8 @@ void Tui::run()
         }
         else if(n == 0)
         {
+            for(auto ai : on_move_delegate)
+                ai->on_move();
             timer.second();
             draw();
         }
@@ -128,16 +141,6 @@ void Tui::run()
 
         }
     }
-    /*
-    int key = -1;
-    while ((key = getchar()))
-    {
-        if(key == 'x' || key == -1)
-            break;
-
-        onkey_delegate->onkey(key);
-    }
-*/
 }
 
 
@@ -147,3 +150,10 @@ Tui::~Tui()
     tcsetattr(0, TCSAFLUSH, &old_opt);
 }
 
+Coord Tui::window_size()
+{
+    Coord win;
+    win.first = x;
+    win.second = y;
+    return win;
+}

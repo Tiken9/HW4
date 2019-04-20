@@ -27,6 +27,11 @@ void View::set_onkey(Keypressable *k)
     onkey_delegate = k;
 }
 
+void View::set_on_move(AI *a)
+{
+    on_move_delegate.push_back(a);
+}
+
 void View::set_ontimer(int time, timer_fn func)
 {
     timer.first = time;

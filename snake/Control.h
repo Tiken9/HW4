@@ -19,3 +19,9 @@ public:
     void onkey(int key) override;
 };
 
+class AI : public Control
+{
+public:
+    AI(Snake* s, Game* g);
+    void on_move();
+};

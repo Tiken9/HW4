@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <random>
 #include "Control.h"
 #include "View.h"
 
@@ -39,3 +41,41 @@ void Control_Human::onkey(int key)
     View* v = View::get();
     v->draw();
 }
+
+AI::AI(Snake *s, Game *g) : Control(s, g)
+{
+    View* v = View::get();
+    v->set_on_move(this);
+}
+
+void AI::on_move()
+{
+    Dir dir[] = {UP, DOWN, RIGHT, LEFT} ;
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::uniform_int_distribution<> uid(1, 5);
+    std::shuffle(dir, dir + 3, g);
+
+    auto head = model->body.front();
+    int a, min_distance = 1000;
+    Coord aim;
+    for(auto r : game->rabbits)
+    {
+        if((a = head.distance(r)) < min_distance)
+        {
+            min_distance = a;
+            aim = r;
+        }
+    }
+
+    if(uid(g) == 2)
+        return;
+
+    for(auto d : dir)
+    {
+        model->dir = d;
+        if(model->next_position().distance(aim) < min_distance)
+            break;
+    }
+}
+
