@@ -126,7 +126,6 @@ void Tui::run()
             read(STDIN_FILENO, &key, 1);
             if(key == 'x' || key == -1)
                 break;
-
             onkey_delegate->onkey(key);
         }
         else if(n == 0)

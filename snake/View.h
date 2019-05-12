@@ -30,6 +30,7 @@ public:
     void set_ontimer(int, timer_fn);
     std::pair<int, timer_fn> timer;
 
+    std::list<Coord>
     Game* game;
     Keypressable* onkey_delegate;
     std::list <AI*> on_move_delegate;

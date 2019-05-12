@@ -13,6 +13,7 @@ struct Coord : public std::pair<int, int>
 {
     using Base = std::pair<int, int>;
     int distance(const Coord&) const;
+    bool is_free;
     using Base :: Base;
 };
 
@@ -31,6 +32,7 @@ public:
     std::list<Coord> body;
     Dir dir;
     int addit;
+    bool is_live;
 };
 
 using Rabbit = Coord;

@@ -27,10 +27,14 @@ Game::Game()
     View* v = View::get();
     v->set_model(this);
     v->set_ontimer(500, std::bind(&Game::move, this));
+
+
 }
 
 void Game::move()
 {
+    View* v = View::get();
+    Coord win_size = v->window_size();
 
     for(auto s : snakes)
     {
@@ -42,6 +46,21 @@ void Game::move()
                 rabbits.remove(r);
                 break;
             }
+
+        for(auto other : snakes)
+        {
+            for(auto obstacle : other->body)
+            {
+                if(obstacle == head)
+                    s->is_live = false;
+            }
+        }
+
+        if(head.second == 1 || head.second == win_size.second || head.first == 1 || head.first == win_size.first)
+        {
+            s->is_live = false;
+        }
+
         s->move();
     }
     add_rabbit();
@@ -59,6 +78,7 @@ Snake::Snake()
 
     dir = LEFT;
     addit = 2;
+    is_live = true;
 }
 
 Snake::Snake(const Snake& s) :
@@ -67,16 +87,16 @@ Snake::Snake(const Snake& s) :
 
 void Snake::move()
 {
+    if(is_live) {
+        body.push_front(next_position());
 
-    body.push_front(next_position());
+        if (addit == 0) {
+            body.pop_back();
+            return;
+        }
 
-    if(addit == 0)
-    {
-        body.pop_back();
-        return;
+        addit--;
     }
-
-    addit--;
 }
 
 
@@ -122,6 +142,7 @@ Coord Snake::next_position()
         default:
             break;
     }
+
     return head;
 }
 
